@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>GymLoad Web</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <style>
+    :root {
+      --bg: #0b0c10;
+      --bg-alt: #13141a;
+      --card: #181b25;
+      --text: #f5f5f5;
+      --muted: #9ca3af;
+      --accent: #3b82f6;
+      --accent-soft: rgba(59, 130, 246, 0.15);
+      --border: #2d3250;
+      --danger: #ef4444;
+    }
+    [data-theme="light"] {
+      --bg: #f3f4f6;
+      --bg-alt: #e5e7eb;
+      --card: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --accent: #2563eb;
+      --accent-soft: rgba(37, 99, 235, 0.08);
+      --border: #d1d5db;
+      --danger: #dc2626;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .app {
+      max-width: 480px;
+      margin: 0 auto;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      display: none;
+    }
+
+    header {
+      padding: 1rem 1.25rem 0.5rem;
+      background: linear-gradient(120deg, var(--bg-alt), var(--bg));
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    header h1 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    header h1 span.logo-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 12px var(--accent);
+    }
+
+    header .subtitle {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 0.15rem;
+    }
+
+    main {
+      flex: 1;
+      padding: 0.75rem 1.25rem 4.5rem;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 0.4rem;
+      margin-top: 0.75rem;
+    }
+
+    .tab-btn {
+      flex: 1;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      padding: 0.35rem 0.5rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+      background: transparent;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.25rem;
+    }
+
+    .tab-btn.active {
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .tab-btn span.icon {
+      font-size: 0.9rem;
+    }
+
+    .section {
+      display: none;
+      animation: fadeIn 0.18s ease-out;
+    }
+    .section.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 1rem;
+      margin-top: 0.8rem;
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    }
+
+    .card h2 {
+      font-size: 0.95rem;
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .card h2 span.icon {
+      font-size: 1rem;
+    }
+
+    .label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--muted);
+      margin-bottom: 0.2rem;
+    }
+
+    .field-row {
+      display: flex;
+      gap: 0.6rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .field {
+      flex: 1;
+    }
+
+    input, select {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 0.5rem 0.55rem;
+      font-size: 0.85rem;
+      background: var(--bg-alt);
+      color: var(--text);
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent-soft);
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .slider-row input[type="range"] {
+      flex: 1;
+    }
+
+    .slider-value {
+      font-size: 0.8rem;
+      color: var(--muted);
+      min-width: 2.3rem;
+      text-align: right;
+    }
+
+    .btn {
+      width: 100%;
+      border-radius: 999px;
+      padding: 0.55rem;
+      border: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 0.4rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    .btn-small {
+      width: auto;
+      font-size: 0.78rem;
+      padding: 0.35rem 0.7rem;
+    }
+
+    .small {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .small-danger {
+      color: var(--danger);
+      font-size: 0.78rem;
+    }
+
+    .result {
+      margin-top: 0.4rem;
+      font-size: 0.9rem;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      border-radius: 999px;
+      padding: 0.15rem 0.45rem;
+      font-size: 0.7rem;
+      background: var(--bg-alt);
+      color: var(--muted);
+    }
+
+    .pr-list {
+      margin-top: 0.4rem;
+      max-height: 260px;
+      overflow-y: auto;
+    }
+
+    .pr-item {
+      padding: 0.45rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+    }
+
+    .pr-item:last-child { border-bottom: none; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 0.12rem 0.4rem;
+      font-size: 0.7rem;
+      background: var(--accent-soft);
+      color: var(--accent);
+      gap: 0.25rem;
+    }
+
+    .pill-group {
+      display: flex;
+      gap: 0.35rem;
+      margin-top: 0.35rem;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      padding: 0.2rem 0.5rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      font-size: 0.7rem;
+      color: var(--muted);
+      background: transparent;
+      cursor: pointer;
+    }
+
+    footer.navbar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(10,10,14,0.95);
+      border-top: 1px solid var(--border);
+      backdrop-filter: blur(18px);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .nav-inner {
+      max-width: 480px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-around;
+      padding: 0.3rem 0.75rem 0.6rem;
+      gap: 0.4rem;
+    }
+
+    .nav-btn {
+      flex: 1;
+      border-radius: 999px;
+      padding: 0.25rem 0.4rem;
+      font-size: 0.7rem;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.1rem;
+      cursor: pointer;
+    }
+
+    .nav-btn.active {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .nav-btn span.icon {
+      font-size: 1rem;
+    }
+
+    /* AUTH */
+    #auth-wrapper {
+      max-width: 480px;
+      margin: 0 auto;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem 1.25rem;
+    }
+
+    .auth-card {
+      width: 100%;
+      background: var(--card);
+      border-radius: 18px;
+      padding: 1.3rem 1.2rem 1.4rem;
+      border: 1px solid var(--border);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.35);
+    }
+
+    .auth-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+    }
+
+    .auth-subtitle {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 0.9rem;
+    }
+
+    .auth-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .auth-tab-btn {
+      flex: 1;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      padding: 0.35rem 0.5rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+      background: transparent;
+      color: var(--muted);
+    }
+
+    .auth-tab-btn.active {
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .auth-error {
+      margin-top: 0.4rem;
+      font-size: 0.78rem;
+      color: var(--danger);
+    }
+
+    @media (min-width: 600px) {
+      main {
+        padding-bottom: 2.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+<!-- AUTH -->
+<div id="auth-wrapper">
+  <div class="auth-card" id="auth-card">
+    <div class="auth-title">GymLoad</div>
+    <div class="auth-subtitle">Registrate o iniciá sesión para guardar tus entrenos.</div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab-btn active" data-auth="login">Login</button>
+      <button class="auth-tab-btn" data-auth="register">Registro</button>
+    </div>
+
+    <div class="label">Usuario</div>
+    <input id="auth-username" type="text" placeholder="Ej: luciano" />
+    <div class="label" style="margin-top:0.5rem;">Contraseña</div>
+    <input id="auth-password" type="password" placeholder="••••••" />
+
+    <button class="btn btn-primary" id="auth-submit">
+      <span id="auth-submit-text">Entrar</span>
+    </button>
+
+    <div class="auth-error" id="auth-error"></div>
+
+    <div class="small" style="margin-top:0.8rem;">
+      Nota: la contraseña se guarda en texto plano en esta demo (no usar para cosas sensibles).
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="app" data-theme="dark">
+  <header>
+    <h1><span class="logo-dot"></span>GymLoad <span style="font-weight:400;font-size:0.8rem;color:var(--muted)">web</span></h1>
+    <div class="subtitle">Multiusuario · PR · historial · ejercicios principales.</div>
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="today"><span class="icon">☀️</span>Hoy</button>
+      <button class="tab-btn" data-tab="loads"><span class="icon">🏋️‍♂️</span>Cargas</button>
+      <button class="tab-btn" data-tab="prs"><span class="icon">🏅</span>PR / Historial</button>
+      <button class="tab-btn" data-tab="profile"><span class="icon">👤</span>Perfil</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- HOY -->
+    <section class="section active" id="section-today">
+      <div class="card">
+        <h2><span class="icon">🧠</span>Estado de hoy</h2>
+        <div class="label">Energía</div>
+        <div class="slider-row">
+          <input type="range" min="1" max="5" step="0.5" value="3" id="energy">
+          <div class="slider-value" id="energy-val">3.0</div>
+        </div>
+
+        <div class="label">Estrés</div>
+        <div class="slider-row">
+          <input type="range" min="1" max="5" step="0.5" value="3" id="stress">
+          <div class="slider-value" id="stress-val">3.0</div>
+        </div>
+
+        <div class="label">Sueño</div>
+        <div class="slider-row">
+          <input type="range" min="1" max="5" step="0.5" value="3" id="sleep">
+          <div class="slider-value" id="sleep-val">3.0</div>
+        </div>
+
+        <div class="label" style="margin-top:0.4rem;">Sugerencia del día</div>
+        <div id="suggestion" class="result small"></div>
+      </div>
+      <div class="card">
+        <h2><span class="icon">📌</span>Tip</h2>
+        <div class="small">
+          En iPhone: Compartir → <strong>"Añadir a pantalla de inicio"</strong>.  
+          Te queda como una app.
+        </div>
+      </div>
+    </section>
+
+    <!-- CARGAS -->
+    <section class="section" id="section-loads">
+      <div class="card">
+        <h2><span class="icon">🏋️‍♀️</span>Calculadora de cargas</h2>
+        <div class="label">Ejercicio</div>
+        <input id="exercise" type="text" placeholder="Ej: Bench press" value="Bench press">
+
+        <div class="field-row" style="margin-top:0.6rem;">
+          <div class="field">
+            <div class="label">Peso (kg)</div>
+            <input id="weight" type="number" inputmode="decimal" placeholder="Ej: 60">
+          </div>
+          <div class="field">
+            <div class="label">Reps</div>
+            <input id="reps" type="number" inputmode="numeric" placeholder="Ej: 8">
+          </div>
+        </div>
+
+        <div class="label" style="margin-top:0.3rem;">RPE</div>
+        <div class="slider-row">
+          <input type="range" min="6" max="10" step="0.5" value="8" id="rpe">
+          <div class="slider-value" id="rpe-val">8.0</div>
+        </div>
+
+        <div class="label" style="margin-top:0.4rem;">Reps objetivo</div>
+        <input id="targetReps" type="number" inputmode="numeric" placeholder="Ej: 5" value="8">
+
+        <button class="btn btn-primary" id="btn-calc">
+          <span>Calcular</span> <span>⚡</span>
+        </button>
+
+        <div class="result" id="rm-result"></div>
+        <div class="result" id="target-result"></div>
+
+        <button class="btn btn-outline" id="btn-save-pr">
+          <span>Guardar serie / PR</span> <span>🏅</span>
+        </button>
+        <div class="small" id="save-msg"></div>
+      </div>
+    </section>
+
+    <!-- PR + HISTORIAL -->
+    <section class="section" id="section-prs">
+      <div class="card">
+        <h2><span class="icon">🏅</span>PR personales</h2>
+        <div class="small" id="pr-empty">Todavía no guardaste ningún PR.</div>
+        <div class="pr-list" id="pr-list"></div>
+        <button class="btn btn-danger btn-small" id="btn-clear-prs">
+          Borrar todos los PR
+        </button>
+        <div class="small-danger" id="clear-prs-msg"></div>
+      </div>
+
+      <div class="card">
+        <h2><span class="icon">📅</span>Historial de series / últimos entrenos</h2>
+
+        <div class="label">Filtrar por ejercicio</div>
+        <select id="history-filter">
+          <option value="all">Todos</option>
+        </select>
+        <div class="small" style="margin-top:0.25rem;">
+          El resumen de cada día se calcula en base al filtro actual.
+        </div>
+
+        <div class="small" id="history-empty" style="margin-top:0.5rem;">
+          Todavía no registraste ninguna serie.
+        </div>
+        <div class="pr-list" id="history-list"></div>
+
+        <button class="btn btn-danger btn-small" id="btn-clear-sets">
+          Borrar historial completo
+        </button>
+        <div class="small-danger" id="clear-sets-msg"></div>
+      </div>
+    </section>
+
+    <!-- PERFIL -->
+    <section class="section" id="section-profile">
+      <div class="card">
+        <h2><span class="icon">🏋️</span>Ejercicios principales</h2>
+        <div class="label">Nombre del ejercicio</div>
+        <input id="main-ex-name" type="text" placeholder="Ej: Bench press">
+
+        <div class="label" style="margin-top:0.5rem;">Reps típicas (separadas por coma)</div>
+        <input id="main-ex-reps" type="text" placeholder="Ej: 5,8,10">
+
+        <button class="btn btn-primary" id="btn-save-main-ex">
+          Guardar ejercicio principal
+        </button>
+        <div class="small" id="main-ex-msg"></div>
+
+        <div class="label" style="margin-top:0.8rem;">Tus ejercicios principales</div>
+        <div id="main-ex-list" class="pr-list"></div>
+      </div>
+
+      <div class="card">
+        <h2><span class="icon">🎨</span>Personalización</h2>
+        <div class="label">Tema</div>
+        <div class="pill-group">
+          <button class="pill" data-theme-btn="dark">Oscuro</button>
+          <button class="pill" data-theme-btn="light">Claro</button>
+        </div>
+
+        <div class="label" style="margin-top:0.8rem;">Recordatorio (simple)</div>
+        <div class="field-row">
+          <div class="field">
+            <div class="label">Hora</div>
+            <input id="reminder-time" type="time" value="20:00">
+          </div>
+        </div>
+        <div class="small">
+          Solo guarda la hora dentro de la app (no manda notificaciones reales).
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="navbar">
+    <div class="nav-inner">
+      <button class="nav-btn active" data-tab="today">
+        <span class="icon">☀️</span>
+        <span>Hoy</span>
+      </button>
+      <button class="nav-btn" data-tab="loads">
+        <span class="icon">🏋️‍♂️</span>
+        <span>Cargas</span>
+      </button>
+      <button class="nav-btn" data-tab="prs">
+        <span class="icon">🏅</span>
+        <span>PR</span>
+      </button>
+      <button class="nav-btn" data-tab="profile">
+        <span class="icon">👤</span>
+        <span>Perfil</span>
+      </button>
+    </div>
+  </footer>
+</div>
+
+<script>
+  // --------- ESTADO GLOBAL ---------
+  let authUser = null; // { username, password }
+  let prs = [];
+  let sets = [];
+  let mainExercises = [];
+
+  // API helper
+  async function apiPost(path, body) {
+    const res = await fetch(path, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      throw new Error(data.error || 'Error en la petición');
+    }
+    return data;
+  }
+
+  // ---------- AUTH ----------
+  const authWrapper = document.getElementById('auth-wrapper');
+  const appEl = document.getElementById('app');
+  const authTabBtns = document.querySelectorAll('.auth-tab-btn');
+  const authUsername = document.getElementById('auth-username');
+  const authPassword = document.getElementById('auth-password');
+  const authSubmit = document.getElementById('auth-submit');
+  const authSubmitText = document.getElementById('auth-submit-text');
+  const authError = document.getElementById('auth-error');
+
+  let authMode = 'login'; // 'login' | 'register'
+
+  authTabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      authTabBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      authMode = btn.dataset.auth;
+      authSubmitText.textContent = authMode === 'login' ? 'Entrar' : 'Crear cuenta';
+      authError.textContent = '';
+    });
+  });
+
+  function saveAuthToStorage() {
+    if (!authUser) return;
+    localStorage.setItem('gymload_auth', JSON.stringify(authUser));
+  }
+
+  function loadAuthFromStorage() {
+    try {
+      const raw = localStorage.getItem('gymload_auth');
+      if (!raw) return null;
+      return JSON.parse(raw);
+    } catch {
+      return null;
+    }
+  }
+
+  async function loadAllData() {
+    if (!authUser) return;
+    const data = await apiPost('/api/data', authUser);
+    prs = data.prs || [];
+    sets = data.sets || [];
+    mainExercises = data.mainExercises || [];
+    refreshHistoryFilterOptions();
+    updatePRListUI();
+    updateHistoryUI();
+    renderMainExercises();
+  }
+
+  async function handleAuthSubmit() {
+    const username = authUsername.value.trim();
+    const password = authPassword.value.trim();
+    if (!username || !password) {
+      authError.textContent = 'Completá usuario y contraseña.';
+      return;
+    }
+    authError.textContent = '';
+    authSubmit.disabled = true;
+    authSubmitText.textContent = authMode === 'login' ? 'Entrando...' : 'Creando...';
+
+    try {
+      if (authMode === 'register') {
+        await apiPost('/api/register', { username, password });
+      }
+      await apiPost('/api/login', { username, password });
+      authUser = { username, password };
+      saveAuthToStorage();
+      authWrapper.style.display = 'none';
+      appEl.style.display = 'flex';
+      await loadAllData();
+    } catch (e) {
+      authError.textContent = e.message;
+    } finally {
+      authSubmit.disabled = false;
+      authSubmitText.textContent = authMode === 'login' ? 'Entrar' : 'Crear cuenta';
+    }
+  }
+
+  authSubmit.addEventListener('click', handleAuthSubmit);
+
+  authPassword.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') handleAuthSubmit();
+  });
+
+  // Intentar login automático
+  (async () => {
+    const saved = loadAuthFromStorage();
+    if (saved && saved.username && saved.password) {
+      authUsername.value = saved.username;
+      authPassword.value = saved.password;
+      authMode = 'login';
+      try {
+        await apiPost('/api/login', saved);
+        authUser = saved;
+        authWrapper.style.display = 'none';
+        appEl.style.display = 'flex';
+        await loadAllData();
+      } catch (e) {
+        // No auto-login
+      }
+    }
+  })();
+
+  // ---------- Utilidades fuerza ----------
+  function oneRepMax(weight, reps) {
+    if (reps <= 0) return 0;
+    return weight * (1 + reps / 30.0);
+  }
+  function weightForReps(oneRM, targetReps) {
+    if (targetReps <= 0) return 0;
+    return oneRM / (1 + targetReps / 30.0);
+  }
+  function adjustForRpe(weight, rpe) {
+    let delta;
+    if (rpe < 7) delta = 0.05;
+    else if (rpe < 8) delta = 0.025;
+    else if (rpe < 9) delta = 0.0;
+    else if (rpe < 10) delta = -0.025;
+    else delta = -0.05;
+    return weight * (1 + delta);
+  }
+
+  // ---------- Tabs ----------
+  const tabButtonsTop = document.querySelectorAll('.tab-btn');
+  const navButtons = document.querySelectorAll('.nav-btn');
+  const sections = {
+    today: document.getElementById('section-today'),
+    loads: document.getElementById('section-loads'),
+    prs: document.getElementById('section-prs'),
+    profile: document.getElementById('section-profile'),
+  };
+
+  function setActiveTab(tab) {
+    Object.values(sections).forEach(s => s.classList.remove('active'));
+    sections[tab].classList.add('active');
+
+    tabButtonsTop.forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.tab === tab);
+    });
+    navButtons.forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.tab === tab);
+    });
+  }
+
+  tabButtonsTop.forEach(btn => {
+    btn.addEventListener('click', () => setActiveTab(btn.dataset.tab));
+  });
+  navButtons.forEach(btn => {
+    btn.addEventListener('click', () => setActiveTab(btn.dataset.tab));
+  });
+
+  // ---------- Hoy ----------
+  const energyInput = document.getElementById('energy');
+  const stressInput = document.getElementById('stress');
+  const sleepInput = document.getElementById('sleep');
+  const energyVal = document.getElementById('energy-val');
+  const stressVal = document.getElementById('stress-val');
+  const sleepVal = document.getElementById('sleep-val');
+  const suggestionEl = document.getElementById('suggestion');
+
+  function updateSuggestion() {
+    const e = parseFloat(energyInput.value);
+    const s = parseFloat(stressInput.value);
+    const sl = parseFloat(sleepInput.value);
+    const score = e - s + sl;
+    let text;
+    if (score < 2) {
+      text = 'Día pesado → mantené cargas o baja un poco el volumen.';
+    } else if (score <= 4) {
+      text = 'Día neutro → entreno normal, sin volverse loco.';
+    } else {
+      text = 'Día bueno → podés intentar subir un poco las cargas.';
+    }
+    suggestionEl.textContent = text;
+  }
+
+  [energyInput, stressInput, sleepInput].forEach(input => {
+    input.addEventListener('input', () => {
+      if (input === energyInput) energyVal.textContent = input.value;
+      if (input === stressInput) stressVal.textContent = input.value;
+      if (input === sleepInput) sleepVal.textContent = input.value;
+      updateSuggestion();
+    });
+  });
+  updateSuggestion();
+
+  // ---------- Cargas ----------
+  const exerciseInput = document.getElementById('exercise');
+  const weightInput = document.getElementById('weight');
+  const repsInput = document.getElementById('reps');
+  const rpeInput = document.getElementById('rpe');
+  const rpeVal = document.getElementById('rpe-val');
+  const targetRepsInput = document.getElementById('targetReps');
+  const btnCalc = document.getElementById('btn-calc');
+  const rmResult = document.getElementById('rm-result');
+  const targetResult = document.getElementById('target-result');
+  const btnSavePr = document.getElementById('btn-save-pr');
+  const saveMsg = document.getElementById('save-msg');
+
+  rpeInput.addEventListener('input', () => {
+    rpeVal.textContent = rpeInput.value;
+  });
+
+  btnCalc.addEventListener('click', () => {
+    const w = parseFloat((weightInput.value || '').replace(',', '.'));
+    const r = parseInt(repsInput.value || '0', 10);
+    const t = parseInt(targetRepsInput.value || '0', 10);
+    const rpe = parseFloat(rpeInput.value);
+
+    if (!w || !r || r <= 0) {
+      rmResult.textContent = 'Completá peso y reps para ver tu 1RM.';
+      targetResult.textContent = '';
+      return;
+    }
+    const rm = oneRepMax(w, r);
+    rmResult.innerHTML = `1RM estimado: <strong>${rm.toFixed(1)} kg</strong>`;
+
+    if (t && t > 0) {
+      let targetW = weightForReps(rm, t);
+      targetW = adjustForRpe(targetW, rpe);
+      targetResult.innerHTML =
+        `Peso sugerido: <strong>${targetW.toFixed(1)} kg</strong> (ajustado por RPE)`;
+    } else {
+      targetResult.textContent = '';
+    }
+  });
+
+  async function saveAsPRAndSet() {
+    if (!authUser) {
+      saveMsg.textContent = 'Tenés que estar logueado.';
+      return;
+    }
+    const name = (exerciseInput.value || '').trim();
+    const w = parseFloat((weightInput.value || '').replace(',', '.'));
+    const r = parseInt(repsInput.value || '0', 10);
+    const rpe = parseFloat(rpeInput.value);
+
+    if (!name || !w || !r || r <= 0) {
+      saveMsg.textContent = 'Completá ejercicio, peso y reps.';
+      return;
+    }
+    saveMsg.textContent = '';
+    btnSavePr.disabled = true;
+
+    try {
+      const body = { ...authUser, exercise: name, weight: w, reps: r, rpe };
+      const data = await apiPost('/api/series', body);
+      prs = data.prs || [];
+      sets = data.sets || [];
+      refreshHistoryFilterOptions();
+      updatePRListUI();
+      updateHistoryUI();
+      saveMsg.textContent = 'Serie guardada / PR actualizado. 🏅';
+      setTimeout(() => { saveMsg.textContent = ''; }, 2500);
+    } catch (e) {
+      saveMsg.textContent = e.message;
+    } finally {
+      btnSavePr.disabled = false;
+    }
+  }
+
+  btnSavePr.addEventListener('click', saveAsPRAndSet);
+
+  // ---------- PR + sets / historial ----------
+  const PR_KEY = 'no-usado-ahora';
+  const SETS_KEY = 'no-usado-ahora';
+  const historyFilter = document.getElementById('history-filter');
+
+  function refreshHistoryFilterOptions() {
+    if (!historyFilter) return;
+    const currentValue = historyFilter.value || 'all';
+    const exercises = Array.from(new Set(sets.map(s => s.exercise))).sort((a,b) => a.localeCompare(b));
+    historyFilter.innerHTML = '<option value="all">Todos</option>';
+    exercises.forEach(name => {
+      const opt = document.createElement('option');
+      opt.value = name;
+      opt.textContent = name;
+      historyFilter.appendChild(opt);
+    });
+    if (exercises.includes(currentValue)) {
+      historyFilter.value = currentValue;
+    } else {
+      historyFilter.value = 'all';
+    }
+  }
+
+  function updatePRListUI() {
+    const prListEl = document.getElementById('pr-list');
+    const prEmptyEl = document.getElementById('pr-empty');
+    prListEl.innerHTML = '';
+
+    if (!prs.length) {
+      prEmptyEl.style.display = 'block';
+      return;
+    }
+    prEmptyEl.style.display = 'none';
+
+    const groups = {};
+    prs.forEach(pr => {
+      if (!groups[pr.exercise]) groups[pr.exercise] = [];
+      groups[pr.exercise].push(pr);
+    });
+
+    Object.keys(groups).sort().forEach(ex => {
+      const group = groups[ex].sort((a,b) => a.reps - b.reps);
+      const header = document.createElement('div');
+      header.style.marginTop = '0.5rem';
+      header.innerHTML = `<div class="badge">🏋️‍♂️ ${ex}</div>`;
+      prListEl.appendChild(header);
+
+      group.forEach(pr => {
+        const item = document.createElement('div');
+        item.className = 'pr-item';
+        const date = new Date(pr.date);
+        const dateStr = `${date.getDate().toString().padStart(2,'0')}/${(date.getMonth()+1).toString().padStart(2,'0')}/${date.getFullYear()}`;
+        item.innerHTML = `
+          <div>
+            <div>${pr.reps} reps · <strong>${pr.weight.toFixed(1)} kg</strong></div>
+            <div class="small">${dateStr}</div>
+          </div>
+          <div class="small">1RM ≈ ${oneRepMax(pr.weight, pr.reps).toFixed(1)} kg</div>
+        `;
+        prListEl.appendChild(item);
+      });
+    });
+  }
+
+  function updateHistoryUI() {
+    const historyList = document.getElementById('history-list');
+    const historyEmpty = document.getElementById('history-empty');
+    historyList.innerHTML = '';
+
+    if (!sets.length) {
+      historyEmpty.textContent = 'Todavía no registraste ninguna serie.';
+      historyEmpty.style.display = 'block';
+      return;
+    }
+
+    const filterValue = historyFilter ? historyFilter.value : 'all';
+
+    const sorted = [...sets].sort((a, b) => new Date(b.date) - new Date(a.date));
+    const filteredAll = filterValue === 'all'
+      ? sorted
+      : sorted.filter(s => s.exercise === filterValue);
+
+    if (!filteredAll.length) {
+      historyEmpty.textContent = 'No hay series todavía para ese ejercicio.';
+      historyEmpty.style.display = 'block';
+      return;
+    }
+    historyEmpty.style.display = 'none';
+
+    const limited = filteredAll.slice(0, 80);
+
+    const groups = {};
+    limited.forEach(s => {
+      const d = new Date(s.date);
+      const dayKey = d.toISOString().slice(0,10);
+      if (!groups[dayKey]) groups[dayKey] = [];
+      groups[dayKey].push(s);
+    });
+
+    const dayKeys = Object.keys(groups).sort((a,b) => (a < b ? 1 : -1));
+
+    dayKeys.forEach(dayKey => {
+      const [y,m,d] = dayKey.split('-');
+      const daySets = groups[dayKey];
+
+      const header = document.createElement('div');
+      header.style.marginTop = '0.5rem';
+      header.innerHTML = `<div class="badge">📅 ${d.padStart(2,'0')}/${m.padStart(2,'0')}/${y}</div>`;
+      historyList.appendChild(header);
+
+      const totalVolume = daySets.reduce((sum,s) => sum + s.weight * s.reps, 0);
+      const totalSets = daySets.length;
+      const heavySets = daySets.filter(s => s.rpe && s.rpe >= 8.5).length;
+      const summary = document.createElement('div');
+      summary.className = 'small';
+      summary.style.marginBottom = '0.2rem';
+      summary.textContent =
+        `Volumen: ${totalVolume.toFixed(1)} kg · Series: ${totalSets} · Series pesadas: ${heavySets}`;
+      historyList.appendChild(summary);
+
+      daySets.forEach(s => {
+        const item = document.createElement('div');
+        item.className = 'pr-item';
+        const dt = new Date(s.date);
+        const timeStr = `${dt.getHours().toString().padStart(2,'0')}:${dt.getMinutes().toString().padStart(2,'0')}`;
+        const rpeText = s.rpe ? ` · RPE ${s.rpe.toFixed(1)}` : '';
+        item.innerHTML = `
+          <div>
+            <div><strong>${s.exercise}</strong></div>
+            <div class="small">${s.weight.toFixed(1)} kg · ${s.reps} reps${rpeText}</div>
+          </div>
+          <div class="small">${timeStr}</div>
+        `;
+        historyList.appendChild(item);
+      });
+    });
+  }
+
+  if (historyFilter) {
+    historyFilter.addEventListener('change', updateHistoryUI);
+  }
+
+  // ---------- Borrar PRs / sets ----------
+  const btnClearPrs = document.getElementById('btn-clear-prs');
+  const btnClearSets = document.getElementById('btn-clear-sets');
+  const clearPrsMsg = document.getElementById('clear-prs-msg');
+  const clearSetsMsg = document.getElementById('clear-sets-msg');
+
+  async function clearPrs() {
+    if (!authUser) {
+      clearPrsMsg.textContent = 'Tenés que estar logueado.';
+      return;
+    }
+    if (!confirm('¿Seguro que querés borrar TODOS tus PR?')) return;
+    clearPrsMsg.textContent = '';
+    btnClearPrs.disabled = true;
+    try {
+      await apiPost('/api/clear-prs', authUser);
+      prs = [];
+      updatePRListUI();
+      clearPrsMsg.textContent = 'PR borrados.';
+      setTimeout(() => { clearPrsMsg.textContent = ''; }, 2000);
+    } catch (e) {
+      clearPrsMsg.textContent = e.message;
+    } finally {
+      btnClearPrs.disabled = false;
+    }
+  }
+
+  async function clearSets() {
+    if (!authUser) {
+      clearSetsMsg.textContent = 'Tenés que estar logueado.';
+      return;
+    }
+    if (!confirm('¿Seguro que querés borrar TODO el historial de series?')) return;
+    clearSetsMsg.textContent = '';
+    btnClearSets.disabled = true;
+    try {
+      await apiPost('/api/clear-sets', authUser);
+      sets = [];
+      refreshHistoryFilterOptions();
+      updateHistoryUI();
+      clearSetsMsg.textContent = 'Historial borrado.';
+      setTimeout(() => { clearSetsMsg.textContent = ''; }, 2000);
+    } catch (e) {
+      clearSetsMsg.textContent = e.message;
+    } finally {
+      btnClearSets.disabled = false;
+    }
+  }
+
+  btnClearPrs.addEventListener('click', clearPrs);
+  btnClearSets.addEventListener('click', clearSets);
+
+  // ---------- Ejercicios principales ----------
+  const mainExName = document.getElementById('main-ex-name');
+  const mainExReps = document.getElementById('main-ex-reps');
+  const btnSaveMainEx = document.getElementById('btn-save-main-ex');
+  const mainExMsg = document.getElementById('main-ex-msg');
+  const mainExList = document.getElementById('main-ex-list');
+
+  function renderMainExercises() {
+    mainExList.innerHTML = '';
+    if (!mainExercises.length) {
+      const txt = document.createElement('div');
+      txt.className = 'small';
+      txt.textContent = 'Todavía no definiste ejercicios principales.';
+      mainExList.appendChild(txt);
+      return;
+    }
+
+    mainExercises.forEach(ex => {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'pr-item';
+      wrapper.style.borderBottom = 'none';
+
+      const left = document.createElement('div');
+      const title = document.createElement('div');
+      title.innerHTML = `<strong>${ex.name}</strong>`;
+      const repsLine = document.createElement('div');
+      repsLine.className = 'small';
+      repsLine.textContent = 'Reps típicas: ' + ex.typical_reps;
+      left.appendChild(title);
+      left.appendChild(repsLine);
+
+      const right = document.createElement('div');
+      right.style.display = 'flex';
+      right.style.flexDirection = 'column';
+      right.style.alignItems = 'flex-end';
+      right.style.gap = '0.25rem';
+
+      const reps = ex.typical_reps.split(',').map(r => r.trim()).filter(r => r);
+      const chipsContainer = document.createElement('div');
+      chipsContainer.style.display = 'flex';
+      chipsContainer.style.flexWrap = 'wrap';
+      chipsContainer.style.gap = '0.2rem';
+
+      reps.forEach(r => {
+        const chip = document.createElement('button');
+        chip.className = 'pill';
+        chip.textContent = `${r} reps`;
+        chip.type = 'button';
+        chip.addEventListener('click', () => {
+          exerciseInput.value = ex.name;
+          targetRepsInput.value = r;
+          setActiveTab('loads');
+        });
+        chipsContainer.appendChild(chip);
+      });
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.className = 'btn btn-outline btn-small';
+      deleteBtn.textContent = 'Eliminar';
+      deleteBtn.style.marginTop = '0.2rem';
+      deleteBtn.addEventListener('click', () => deleteMainExercise(ex.id));
+
+      right.appendChild(chipsContainer);
+      right.appendChild(deleteBtn);
+
+      wrapper.appendChild(left);
+      wrapper.appendChild(right);
+      mainExList.appendChild(wrapper);
+    });
+  }
+
+  async function saveMainExercise() {
+    if (!authUser) {
+      mainExMsg.textContent = 'Tenés que estar logueado.';
+      return;
+    }
+    const name = mainExName.value.trim();
+    const repsText = mainExReps.value.trim();
+    if (!name || !repsText) {
+      mainExMsg.textContent = 'Completá nombre y reps típicas.';
+      return;
+    }
+    mainExMsg.textContent = '';
+    btnSaveMainEx.disabled = true;
+    try {
+      const data = await apiPost('/api/main-exercise', {
+        ...authUser,
+        name,
+        typical_reps: repsText
+      });
+      mainExercises = data.mainExercises || [];
+      renderMainExercises();
+      mainExMsg.textContent = 'Ejercicio principal guardado.';
+      setTimeout(() => { mainExMsg.textContent = ''; }, 2000);
+    } catch (e) {
+      mainExMsg.textContent = e.message;
+    } finally {
+      btnSaveMainEx.disabled = false;
+    }
+  }
+
+  async function deleteMainExercise(id) {
+    if (!authUser) {
+      mainExMsg.textContent = 'Tenés que estar logueado.';
+      return;
+    }
+    if (!confirm('¿Seguro que querés borrar este ejercicio principal?')) return;
+    mainExMsg.textContent = '';
+    try {
+      const data = await apiPost('/api/delete-main-exercise', {
+        ...authUser,
+        id
+      });
+      mainExercises = data.mainExercises || [];
+      renderMainExercises();
+    } catch (e) {
+      mainExMsg.textContent = e.message;
+    }
+  }
+
+  btnSaveMainEx.addEventListener('click', saveMainExercise);
+
+  // ---------- Tema ----------
+  const THEME_KEY = 'gymload_theme';
+  function applyTheme(theme) {
+    appEl.setAttribute('data-theme', theme);
+  }
+  function loadTheme() {
+    const t = localStorage.getItem(THEME_KEY) || 'dark';
+    applyTheme(t);
+  }
+  function saveTheme(t) {
+    localStorage.setItem(THEME_KEY, t);
+  }
+  loadTheme();
+
+  document.querySelectorAll('[data-theme-btn]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const t = btn.dataset.themeBtn;
+      applyTheme(t);
+      saveTheme(t);
+    });
+  });
+
+  // ---------- Recordatorio simple ----------
+  const REM_KEY = 'gymload_reminder_time';
+  const reminderInput = document.getElementById('reminder-time');
+
+  function loadReminder() {
+    const t = localStorage.getItem(REM_KEY);
+    if (t) reminderInput.value = t;
+  }
+  function saveReminder() {
+    localStorage.setItem(REM_KEY, reminderInput.value);
+  }
+  loadReminder();
+  reminderInput.addEventListener('change', saveReminder);
+</script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "name": "gymload",
+  "version": "1.0.0",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.0",
+    "sqlite3": "^5.1.7",
+    "path": "^0.12.7",
+    "cors": "^2.8.5"
+  }
+}
